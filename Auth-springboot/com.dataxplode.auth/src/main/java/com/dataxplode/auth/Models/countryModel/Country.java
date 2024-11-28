@@ -7,6 +7,11 @@ import lombok.Setter;
 import javax.persistence.*;
 
 @NamedQuery(name="Country.getALlCountries", query = "select new com.dataxplode.auth.wrapper.CountryWrapper(u.countryId, u.countryName) from Country u")
+@NamedQuery(
+        name = "Country.getCountryByName",
+        query = "SELECT c FROM Country c WHERE c.countryName = :countryName"
+)
+
 
 @Entity
 @Data

@@ -1,13 +1,14 @@
-package com.dataxplode.auth.serviceImpl.CountryService;
+package com.dataxplode.auth.serviceImpl;
 
 import com.dataxplode.auth.JWT.JwtFilter;
 import com.dataxplode.auth.Models.countryModel.Country;
 import com.dataxplode.auth.constants.Constants;
-import com.dataxplode.auth.dao.countryDAO.CountryDao;
+import com.dataxplode.auth.dao.CountryDAO.CountryDao;
 import com.dataxplode.auth.service.CountryService.CountryService;
 import com.dataxplode.auth.utils.Utils;
 import com.dataxplode.auth.wrapper.CountryWrapper;
-import org.apache.tomcat.util.bcel.Const;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,12 +26,15 @@ public class CountryServiceImpl implements CountryService {
     @Autowired
     JwtFilter jwtFilter;
 
+    private static final Logger log = LoggerFactory.getLogger(CountryServiceImpl.class);
+
+
     @Override
     public ResponseEntity<List<CountryWrapper>> getAllCountry() {
         try{
             return new ResponseEntity<>(countryDao.getALlCountries(),HttpStatus.OK);
         }catch(Exception ex){
-            ex.printStackTrace();
+            log.error("Error occurred while getting Countries", ex);
         }
         return new ResponseEntity <>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -45,7 +49,7 @@ public class CountryServiceImpl implements CountryService {
                 return Utils.getResponseEntity(Constants.UNAUTHORIZED_ACCESS,HttpStatus.UNAUTHORIZED);
             }
         }catch(Exception ex){
-            ex.printStackTrace();
+            log.error("Error occurred while Adding Country", ex);
         }
         return Utils.getResponseEntity(Constants.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST);
     }

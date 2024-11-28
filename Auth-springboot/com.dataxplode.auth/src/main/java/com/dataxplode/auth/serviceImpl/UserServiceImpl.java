@@ -5,12 +5,13 @@ import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.User;
 import com.dataxplode.auth.JWT.CustomerUserDetailsService;
 import com.dataxplode.auth.JWT.JwtFilter;
 import com.dataxplode.auth.JWT.JwtUtil;
+import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.UserSubscription;
 import com.dataxplode.auth.constants.Constants;
 import com.dataxplode.auth.dao.UserDao;
+import com.dataxplode.auth.service.SubscriptionService;
 import com.dataxplode.auth.service.UserService;
 import com.dataxplode.auth.utils.EmailUtils;
 import com.dataxplode.auth.utils.Utils;
-import com.dataxplode.auth.wrapper.UserWrapper;
 import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +51,10 @@ public class UserServiceImpl implements UserService {
     @Autowired
     EmailUtils emailUtils;
 
+
+    @Autowired
+    private SubscriptionService subscriptionService;
+
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Override
@@ -76,9 +81,15 @@ public class UserServiceImpl implements UserService {
                     String token = UUID.randomUUID().toString();
 
 
-                    userDao.save(getUserFromMap(requestMap,token));  // Save user with hashed password
+                        User savedUser = userDao.save(getUserFromMap(requestMap, token));// Save user with hashed password
 
-                    // Send verification email
+                        UserSubscription subscription = subscriptionService.createSubscription(savedUser);
+
+                        savedUser.setSubscriptions(subscription);
+                        userDao.save(savedUser);
+
+
+                        // Send verification email
                     String verificationUrl = "http://127.0.0.1:8081/user/verify?token=" + token;
                     emailUtils.sendVerificationEmail(email, verificationUrl);
 
@@ -113,20 +124,15 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         Role role  = new Role();
         role.setRoleId(2L);
-
         user.setUsername(requestMap.get("name"));
         user.setContactNumber(requestMap.get("contactNumber"));
         user.setEmail(requestMap.get("email"));
         // Hash the password before saving
         user.setPassword(passwordEncoder.encode(requestMap.get("password")));
-        user.setUserStatus("false");
-
+        user.setUserStatus("true");
         user.setRole(role);
-
         user.setEnabled(false); // Not enabled yet
-
         user.setVerificationToken(verification_token);
-
         return user;
     }
 
@@ -164,7 +170,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<List<UserWrapper>> getAllUser() {
+    public ResponseEntity<List<User>> getAllUser() {
         try{
           if(jwtFilter.isAdmin()) {
              return new ResponseEntity<>(userDao.getAllUser(),HttpStatus.OK);
@@ -298,10 +304,9 @@ public class UserServiceImpl implements UserService {
 
             // Validate the token
             if (!jwtUtil.validateResetToken(token)) {
-//                return ResponseEntity.badRequest().body("Invalid or expired token.");
+                //return ResponseEntity.badRequest().body("Invalid or expired token.");
                 return Utils.getResponseEntity("Invalid or expired token.", HttpStatus.BAD_REQUEST);
             }
-
             // Extract email from token claims
             String email = jwtUtil.getEmailFromToken(token);
 
@@ -310,7 +315,7 @@ public class UserServiceImpl implements UserService {
             if (user == null) {
                 return ResponseEntity.badRequest().body("User not found.");
             }
-
+            
             // Update the user's password
             user.setPassword(passwordEncoder.encode(newPassword));
             userDao.save(user);
@@ -321,6 +326,26 @@ public class UserServiceImpl implements UserService {
         }
 
         return Utils.getResponseEntity(Constants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<User> getUserDetails(Map<String, String> requestMap) {
+        User user = new User();
+        try{
+            Optional<User> userDetails = userDao.findByUserId(Long.parseLong(requestMap.get("userId")));
+            if(userDetails.isPresent()){
+                User userDetail = userDetails.get();
+                return new ResponseEntity <>(userDetail,HttpStatus.OK);
+
+            }else{
+                return new ResponseEntity <>(user,HttpStatus.NOT_FOUND);
+
+            }
+
+        }catch (Exception ex){
+            log.error("Not able to get UserDetails ",ex);
+        }
+        return new ResponseEntity <>(user,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }

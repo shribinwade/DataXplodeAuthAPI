@@ -14,4 +14,7 @@ public class Constants {
    public static final String PLANALREADYEXISTS = "Plan already exists";
    public static final String PLANUPDATEDSUCCESSFUllY = "Plan Updated Successfully";
    public static final String PLANNOTEXISTS= "Plan Doesn't Exists";
+
+   public static final String PLATFORMADDEDSUCCESSFULLY = "Platform Added Successfully";
+   public static final String PLATFORMALREADYEXISTS = "Platform already exists";
 }

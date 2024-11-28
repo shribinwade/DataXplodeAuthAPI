@@ -1,7 +1,11 @@
 package com.dataxplode.auth.Models.UsersAndUserSubscriptionModels;
 
 
+import com.dataxplode.auth.Models.FeatureContentModel.FeatureContentModel;
 import com.dataxplode.auth.Models.RoleModel.Role;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -12,7 +16,7 @@ import java.util.List;
 
 
 @NamedQuery(name = "User.findByEmailId", query = "select u from User u where u.email=:email")
-@NamedQuery(name="User.getAllUser", query = "select new com.dataxplode.auth.wrapper.UserWrapper(u.id, u.username,u.email,u.contactNumber,u.userStatus) from User u where u.role= 'user'")
+@NamedQuery(name="User.getAllUser", query = "select u from User u where u.role= 2L")
 @NamedQuery(name="User.updateStatus",query = "update User u set u.userStatus=:userStatus where u.id=:id")
 @NamedQuery(name="User.getAllAdmin", query = "select u.email from User u where u.role= 'admin'")
 
@@ -23,16 +27,14 @@ import java.util.List;
 @DynamicUpdate
 @NoArgsConstructor
 @Table(name = "users")
-public class User implements Serializable {
-
+public class User  {
 //    WE have used Data annotation to create noarg arg construtor and getter and setter methods
 
-    private static final long serialVersionUID = 1L;
+//    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
-
 
     @Column(nullable = false ,unique = true)
     private String username;
@@ -59,10 +61,8 @@ public class User implements Serializable {
     @Column(nullable = false)
     private boolean enabled;
 
-    @OneToMany(mappedBy = "user")
-    private List<UserSubscription> subscriptions; // Relationship with UserSubscription
-
-
-
+    @OneToOne(mappedBy = "user" ,fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private UserSubscription subscriptions; // Relationship with UserSubscription
 
 }

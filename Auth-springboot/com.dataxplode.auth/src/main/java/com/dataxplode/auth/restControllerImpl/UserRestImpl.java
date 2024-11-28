@@ -1,5 +1,6 @@
 package com.dataxplode.auth.restControllerImpl;
 
+import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.User;
 import com.dataxplode.auth.constants.Constants;
 import com.dataxplode.auth.restController.UserRest;
 import com.dataxplode.auth.service.UserService;
@@ -26,6 +27,11 @@ public class UserRestImpl implements UserRest {
     }
 
     @Override
+    public ResponseEntity<User> getUserDetails(Map<String, String> requestMap) {
+       return userService.getUserDetails(requestMap);
+    }
+
+    @Override
     public ResponseEntity<String> signUp(Map<String, String> requestMap) {
 
      try{
@@ -47,14 +53,14 @@ public class UserRestImpl implements UserRest {
     }
 
     @Override
-    public ResponseEntity<List<UserWrapper>> getAllUser() {
+    public ResponseEntity<List<User>> getAllUser() {
         try{
              return userService.getAllUser();
         }catch (Exception ex){
             ex.printStackTrace();
         }
 
-        return new ResponseEntity<List<UserWrapper>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<User>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override

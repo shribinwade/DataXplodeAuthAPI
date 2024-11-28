@@ -11,7 +11,6 @@ import java.time.LocalDate;
 
 @Data
 public class user_subscripionsWrapper {
-
     private Long subscriptionId;
     private User user; // Relationship with User
     private Plan plan; // Relationship with Plan

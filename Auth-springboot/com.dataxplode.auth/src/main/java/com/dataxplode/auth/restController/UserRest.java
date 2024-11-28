@@ -1,9 +1,9 @@
 package com.dataxplode.auth.restController;
 
-import com.dataxplode.auth.wrapper.UserWrapper;
+import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.User;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +15,9 @@ public interface UserRest {
     @GetMapping("/test")
     public ResponseEntity<String> test();
 
+    @PostMapping("/getUserDetails")
+    public ResponseEntity<User> getUserDetails(@RequestBody(required = true) Map<String,String> requestMap);
+
     //SIGNUP ENDPOINT
     @PostMapping(path = "/signup")
     public ResponseEntity<String> signUp(@RequestBody(required = true) Map<String, String> requestMap);
@@ -23,7 +26,7 @@ public interface UserRest {
     public ResponseEntity<String> logIn(@RequestBody(required = true) Map<String,String> requestMap);
 
     @GetMapping(path = "/get")
-    public ResponseEntity<List<UserWrapper>> getAllUser();
+    public ResponseEntity<List<User>> getAllUser();
 
     @PostMapping(path = "/update")
     public ResponseEntity<String> update (@RequestBody(required = true) Map<String,String> requestMap);

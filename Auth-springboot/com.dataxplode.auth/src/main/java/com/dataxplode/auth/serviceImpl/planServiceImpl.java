@@ -1,12 +1,13 @@
-package com.dataxplode.auth.serviceImpl.PlanServiceImpl;
+package com.dataxplode.auth.serviceImpl;
 
 import com.dataxplode.auth.JWT.JwtFilter;
-import com.dataxplode.auth.JWT.JwtUtil;
+
+import com.dataxplode.auth.Models.planModel.BillingCycle;
 import com.dataxplode.auth.Models.planModel.Plan;
+
 import com.dataxplode.auth.constants.Constants;
 import com.dataxplode.auth.dao.PlanDAO.PlanDao;
 import com.dataxplode.auth.service.PlanService.PlanService;
-import com.dataxplode.auth.serviceImpl.UserServiceImpl;
 import com.dataxplode.auth.utils.Utils;
 import com.dataxplode.auth.wrapper.PlanWrapper;
 import org.slf4j.Logger;
@@ -25,12 +26,9 @@ public class planServiceImpl implements PlanService {
     PlanDao planDao;
 
     @Autowired
-    JwtUtil jwtUtil;
-
-    @Autowired
     JwtFilter jwtFilter;
 
-    private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(planServiceImpl.class);
     @Override
     public ResponseEntity<String> createPlan(Map<String, String> requestMap) {
           log.info("Inside the createPlan method");
@@ -51,7 +49,7 @@ public class planServiceImpl implements PlanService {
                   return Utils.getResponseEntity(Constants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
               }
           }catch(Exception ex){
-               ex.printStackTrace();
+              log.error("Error occurred while creating plan", ex);
           }
         return Utils.getResponseEntity(Constants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -66,10 +64,10 @@ public class planServiceImpl implements PlanService {
                 if (validatePlanMap(requestMap)) {
                     if (optional.isPresent()) {
                         Plan plan1 = optional.get();
-                        plan1.setName(requestMap.get("planName"));
-                        plan1.setBillingCycle(requestMap.get("billingCycle"));
+                        plan1.setPlanname(requestMap.get("planName"));
+                        plan1.setBillingCycle (BillingCycle.MONTHLY);
                         plan1.setDescription(requestMap.get("description"));
-                        plan1.setPrice(Double.parseDouble( requestMap.get("price")));
+                        plan1.setPlanprice(Double.parseDouble( requestMap.get("price")));
                         plan1.setSearchLimit(Integer.parseInt(requestMap.get("searchLimit")));
                         planDao.save(plan1);
                         return Utils.getResponseEntity(Constants.PLANUPDATEDSUCCESSFUllY, HttpStatus.OK);
@@ -83,17 +81,18 @@ public class planServiceImpl implements PlanService {
                 return Utils.getResponseEntity(Constants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
             }
         }catch(Exception ex){
-            ex.printStackTrace();
+            log.error("Error occurred while updating plan", ex);
         }
         return Utils.getResponseEntity(Constants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
 
     @Override
     public ResponseEntity<String> deletePlan(Map<String, String> requestMap) {
         try{
             if(jwtFilter.isAdmin()){
                 Optional<Plan> optional = planDao.findById(Long.parseLong(requestMap.get("planId")));
-                if (!optional.isEmpty()){
+                if (optional.isPresent()){
                     planDao.deleteById(Long.parseLong(requestMap.get("id")));
                     return Utils.getResponseEntity("Plan Deleted Successfully", HttpStatus.OK);
                 }else{
@@ -103,7 +102,7 @@ public class planServiceImpl implements PlanService {
                 return Utils.getResponseEntity(Constants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
             }
         }catch(Exception ex){
-            ex.printStackTrace();
+            log.error("Error occurred while deleting plan", ex);
         }
         return Utils.getResponseEntity(Constants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -114,11 +113,11 @@ public class planServiceImpl implements PlanService {
         List<PlanWrapper> list = new ArrayList<>();
         try{
             List<PlanWrapper> allPlans = planDao.getAllPlans();
-            return new ResponseEntity<List<PlanWrapper>>(allPlans,HttpStatus.OK);
+            return new ResponseEntity<>(allPlans, HttpStatus.OK);
         }catch (Exception ex){
-            ex.printStackTrace();
+            log.error("Error occurred while getting plans", ex);
         }
-        return new ResponseEntity<List<PlanWrapper>>(list,HttpStatus.OK);
+        return new ResponseEntity<>(list,HttpStatus.OK);
     }
 
 
@@ -132,10 +131,15 @@ public class planServiceImpl implements PlanService {
 
    private Plan getPlanFromMap(Map<String, String> requestMap){
         Plan newplan = new Plan();
-             newplan.setName(requestMap.get("planName"));
-             newplan.setBillingCycle(requestMap.get("billingCycle"));
+             newplan.setPlanname(requestMap.get("planName"));
+             if(requestMap.get("billingCycle").equals("monthly")){
+                 newplan.setBillingCycle(BillingCycle.MONTHLY);
+             }else if(requestMap.get("billingCycle").equals("free")){
+                 newplan.setBillingCycle(BillingCycle.FREE);
+             }
+
              newplan.setDescription(requestMap.get("description"));
-             newplan.setPrice(Double.parseDouble( requestMap.get("price")));
+             newplan.setPlanprice(Double.parseDouble( requestMap.get("price")));
              newplan.setSearchLimit(Integer.parseInt(requestMap.get("searchLimit")));
         return newplan;
     }

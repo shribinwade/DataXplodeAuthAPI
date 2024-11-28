@@ -10,6 +10,6 @@ import javax.persistence.Column;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PlatformWrapper {
-    private Integer platformId;
+    private Long platformId;
     private String platformName;
 }

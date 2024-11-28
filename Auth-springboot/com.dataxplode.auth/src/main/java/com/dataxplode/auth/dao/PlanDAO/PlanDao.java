@@ -12,5 +12,6 @@ public interface PlanDao extends JpaRepository<Plan,Long> {
     Plan findByName(@Param("planName") String planName);
     List<PlanWrapper> getAllPlans();
 //    Plan updateByID(@Param("planId")  Long planId);
+    Plan getFreePlan();
 
 }

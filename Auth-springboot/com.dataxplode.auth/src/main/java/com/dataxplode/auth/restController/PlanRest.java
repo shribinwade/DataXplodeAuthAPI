@@ -27,9 +27,4 @@ public interface PlanRest {
     @GetMapping(path="/allplans")
     public ResponseEntity<List<PlanWrapper>> getAllPlans();
 
-
-
-
-
-
 }

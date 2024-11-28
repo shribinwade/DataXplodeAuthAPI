@@ -1,5 +1,6 @@
 package com.dataxplode.auth.wrapper;
 
+import com.dataxplode.auth.Models.planModel.BillingCycle;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,6 @@ public class PlanWrapper {
     private Integer searchLimit;
     private Double price;
     private String description;
-    private String billingCycle;
+    private BillingCycle billingCycle =BillingCycle.FREE;
     private LocalDateTime createdAt;
 }

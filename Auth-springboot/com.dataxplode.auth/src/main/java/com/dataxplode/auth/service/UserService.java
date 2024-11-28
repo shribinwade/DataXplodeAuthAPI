@@ -1,5 +1,6 @@
 package com.dataxplode.auth.service;
 
+import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.User;
 import com.dataxplode.auth.wrapper.UserWrapper;
 import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +13,7 @@ public interface UserService {
 
     ResponseEntity<String> logIn(Map<String, String> requestMap);
 
-    ResponseEntity<List<UserWrapper>> getAllUser();
+    ResponseEntity<List<User>> getAllUser();
 
     ResponseEntity<String> update(Map<String,String> requestMap);
 
@@ -26,5 +27,5 @@ public interface UserService {
 
     ResponseEntity<String> resetPassword(Map<String,String> requestMap);
 
-
+    ResponseEntity<User> getUserDetails(Map<String, String> requestMap);
 }

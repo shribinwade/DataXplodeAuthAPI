@@ -1,6 +1,8 @@
 package com.dataxplode.auth.Models.RoleModel;
 
 import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -26,9 +28,10 @@ public class Role {
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    private LocalDateTime updatedAt;
+    private LocalDateTime updatedAt =LocalDateTime.now();;
 
     @OneToMany(mappedBy = "role")
+    @JsonBackReference // Mark this as the back part of the relationship
     private List<User> users; // Relationship with User
 
     // Getters and Setters
