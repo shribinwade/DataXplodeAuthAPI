@@ -11,7 +11,6 @@ import java.util.Map;
 
 @RequestMapping(path = "/platform")
 public interface PlatformRest {
-
     //To-Do
     //Create Platform
     @PostMapping(path="/create")

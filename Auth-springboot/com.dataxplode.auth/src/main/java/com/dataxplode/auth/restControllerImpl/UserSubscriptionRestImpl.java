@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -38,6 +39,11 @@ public class UserSubscriptionRestImpl implements UserSubscriptionRest {
     @Override
     public ResponseEntity<UserSubscription> upgradeSubscription(Map<String, String> requestMap) {
         return subscriptionService.upgradeSubscription(requestMap);
+    }
+
+    @Override
+    public ResponseEntity<List<Object[]>> getUserSearchData(Integer UserID, String country, String platform) {
+         return subscriptionService.getUserSearchData(UserID, country, platform);
     }
 
 

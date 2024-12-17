@@ -31,7 +31,7 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
 
-         if (httpServletRequest.getServletPath().matches("/user/test|/user/login|/user/signup|/user/forgotPassword|/user/resetPassword")){
+         if (httpServletRequest.getServletPath().matches("/user/test|/user/login|/user/signup|/user/forgotPassword|/user/resetPassword|/plan/allplans")){
              filterChain.doFilter(httpServletRequest,httpServletResponse);
          }
          else{

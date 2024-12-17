@@ -63,6 +63,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/user/signup",
                         "/user/forgotPassword",
                         "/user/verify/**",
+                        "/plan/allplans",
                         "/swagger-resources/**",
                         "/swagger-ui/**",
                         "/v2/api-docs",

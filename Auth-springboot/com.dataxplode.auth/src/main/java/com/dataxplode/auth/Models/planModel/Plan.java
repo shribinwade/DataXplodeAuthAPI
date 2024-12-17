@@ -45,6 +45,7 @@ public class Plan {
     private List<UserSubscription> userSubscriptions; // Relationship with UserSubscription
 
     @OneToMany(mappedBy = "plan")
+    @JsonBackReference
     private List<PlanFeatureTable> planFeature;
 
 //    @OneToMany(mappedBy = "plan")

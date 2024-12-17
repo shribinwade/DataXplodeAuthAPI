@@ -35,7 +35,7 @@ public class FeatureContentModel {
     private Features feature;
 
     @Type(type = "json")
-    @Column(name = "search_results", columnDefinition = "JSON")
+    @Column(name = "search_results", columnDefinition = "JSON", unique = true)
     private String searchData;
 
     @Column(nullable = false, columnDefinition = "DATE")
@@ -44,8 +44,26 @@ public class FeatureContentModel {
     @Column(nullable = false, columnDefinition = "DATE")
     private LocalDate updatedAt;
 
+    @Column(name = "keyword_query", nullable = true, unique = true)
+    private String keywordQuery;
+
+    @Column(name = "product_query", nullable = true, unique = true)
+    private String productQuery;
+
+    @Column(name = "competitive_stratergy_query", nullable = true, unique = true)
+    private String competitiveStratergyQuery;
+
+    @Column(name = "market_Search_query", nullable = true, unique = true)
+    private String marketSearchQuery;
+
+    @Column(name = "competitior_analysis_query", nullable = true, unique = true)
+    private String competitiorAnalysisQuery;
+
+    @Column(name = "distributor_query", nullable = true, unique = true)
+    private String distributorQuery;
+
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "review_id", nullable = false)
+    @JoinColumn(name = "review_id", nullable = true)
     private Reviews review;
 
     @ManyToOne
@@ -57,9 +75,7 @@ public class FeatureContentModel {
     private Country country;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "pincode_id", nullable = false)
+    @JoinColumn(name = "pincode_id", nullable = true)
     private Pincode pincode;
-
-
 
 }

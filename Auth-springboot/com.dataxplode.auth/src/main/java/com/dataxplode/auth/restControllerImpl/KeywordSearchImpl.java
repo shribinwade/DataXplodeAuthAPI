@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
@@ -34,6 +36,16 @@ public class KeywordSearchImpl implements KeywordSearch {
     }
 
     @Override
+    public ResponseEntity<String> search(Integer UserID, String country, String keyword) {
+        try{
+            return keywordSearchService.getKeywordData(country, keyword,UserID );
+        }catch (Exception ex){
+            log.info("Unable to add Keyword: ",ex);
+        }
+        return Utils.getResponseEntity(Constants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
     public ResponseEntity<UserSubscription> getKeyword(Map<String, String> requestMap) {
         return null;
     }
@@ -42,4 +54,6 @@ public class KeywordSearchImpl implements KeywordSearch {
     public ResponseEntity<UserSubscription> deleteKeyword(Map<String, String> requestMap) {
         return null;
     }
+
+
 }

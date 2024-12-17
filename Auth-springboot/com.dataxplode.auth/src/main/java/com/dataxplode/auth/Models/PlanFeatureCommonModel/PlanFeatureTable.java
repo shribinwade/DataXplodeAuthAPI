@@ -24,6 +24,7 @@ public class PlanFeatureTable {
 
     @ManyToOne
     @JoinColumn(name = "feature_id", nullable = false)
+    @JsonBackReference
     private Features feature;
 
     @Column(nullable = false)

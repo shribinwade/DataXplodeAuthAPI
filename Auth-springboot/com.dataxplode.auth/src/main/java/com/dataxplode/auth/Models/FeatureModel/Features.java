@@ -33,6 +33,7 @@ public class Features {
     private LocalDate updatedAt;
 
     @OneToMany(mappedBy = "feature")
+    @JsonBackReference
     private List<FeatureContentModel> content;
 
     @OneToMany(mappedBy = "feature")

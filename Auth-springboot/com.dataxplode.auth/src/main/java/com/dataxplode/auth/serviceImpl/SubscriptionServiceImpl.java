@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -36,7 +37,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     PlanDao planDao;
 
     private static final Logger log = LoggerFactory.getLogger(PlatformServiceImpl.class);
-
 
     @Override
     public UserSubscription createSubscription(User user) {
@@ -90,6 +90,14 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 userSubscription.setEndDate(LocalDate.now().plusMonths(1));
                 userSubscription.setNextBillingDate(LocalDate.now().plusMonths(1));
             }
+            else if(newUserPlan.getBillingCycle() == BillingCycle.QUARTERLY){
+                userSubscription.setEndDate(LocalDate.now().plusMonths(3));
+                userSubscription.setNextBillingDate(LocalDate.now().plusMonths(3));
+            }
+            else if(newUserPlan.getBillingCycle() == BillingCycle.HALF_YEARLY){
+                userSubscription.setEndDate(LocalDate.now().plusMonths(6));
+                userSubscription.setNextBillingDate(LocalDate.now().plusMonths(6));
+            }
             else{
                 userSubscription.setEndDate(LocalDate.now().plusDays(15));
                 userSubscription.setNextBillingDate(LocalDate.now().plusDays(15));
@@ -100,6 +108,25 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             log.error("Error occurred while updating plan",ex);
         }
         return null;
+    }
+
+    @Override
+    public ResponseEntity<List<Object[]>>  getUserSearchData(Integer UserID, String country, String platform) {
+        try {
+            List<Object[]> searchData = userSubscriptionDao.findUserSearchDataQuery(Long.valueOf(UserID), country, platform);
+
+
+
+            if (searchData.isEmpty()) {
+                log.info("Search Data: {}", searchData);
+                return new ResponseEntity<>(searchData, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(searchData, HttpStatus.OK);
+            }
+        } catch (Exception ex) {
+            log.error("Error occurred while retrieving product data", ex);
+        }
+        return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
     @Override

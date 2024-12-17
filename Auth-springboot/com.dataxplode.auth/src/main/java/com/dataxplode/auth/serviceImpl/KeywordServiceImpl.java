@@ -18,9 +18,11 @@ import com.dataxplode.auth.dao.CountryDAO.CountryDao;
 import com.dataxplode.auth.dao.reviewsDAO.ReviewsDao;
 import com.dataxplode.auth.service.KeywordSearchService;
 import com.dataxplode.auth.utils.Utils;
+import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -57,7 +59,6 @@ public class KeywordServiceImpl implements KeywordSearchService {
     ReviewsDao reviewsDao;
 
 
-
     @Override
     public ResponseEntity<String> addKeyword(Map<String, String> requestMap) {
 
@@ -69,6 +70,7 @@ public class KeywordServiceImpl implements KeywordSearchService {
         if (userSubDetail == null) {
             return Utils.getResponseEntity("User subscription details not found", HttpStatus.BAD_REQUEST);
         }
+
 
         Plan plan = userSubDetail.getPlan();
 
@@ -92,42 +94,25 @@ public class KeywordServiceImpl implements KeywordSearchService {
             // Add Keyword Logic
             String SearchData = requestMap.get("searchData");
             if (SearchData == null || SearchData.isEmpty()) {
-                return Utils.getResponseEntity("SearchData is Missing ",HttpStatus.BAD_REQUEST);
+                return Utils.getResponseEntity("SearchData is Missing ", HttpStatus.BAD_REQUEST);
+            }
+
+            String keywordQuery = requestMap.get("keywordQuery");
+            if (keywordQuery == null || keywordQuery.isEmpty()) {
+                return Utils.getResponseEntity("KeywordQuery is Missing ", HttpStatus.BAD_REQUEST);
+
             }
 
             Features keywordSearch = featureDAO.findByFeature_name("Keyword Search");
             Country countryName = countryDao.getCountryByName(requestMap.get("countryName"));
 
-            Optional<Pincode> existingPincode = pincodeDao.findByPincode(requestMap.get("pincode"));
-
-            Pincode pincode;
-
-            if (existingPincode.isPresent()) {
-                // Pincode exists, use the existing one
-                pincode = existingPincode.get();
-            } else {
-                // Pincode doesn't exist, create a new one and save it
-                pincode = new Pincode();
-                pincode.setPincode(requestMap.get("pincode"));
-                pincode = pincodeDao.save(pincode);  // Save new pincode
-            }
 
             Optional<Platform> existingplatform = platformDao.findByPlatformName(requestMap.get("platform"));
             Platform platform = null;
-            if(existingplatform.isPresent()){
-               platform = existingplatform.get();
-            }else{
-                Utils.getResponseEntity("Platform not found",HttpStatus.BAD_REQUEST);
-            }
-
-            Optional<Reviews> existingreviews = reviewsDao.findByreviewResult(requestMap.get("review"));
-            Reviews reviews;
-            if(existingreviews.isPresent()){
-                reviews = existingreviews.get();
-            }else{
-                reviews = new Reviews();
-                reviews.setReviewResult(requestMap.get("reviewResult"));
-                reviews= reviewsDao.save(reviews);
+            if (existingplatform.isPresent()) {
+                platform = existingplatform.get();
+            } else {
+                Utils.getResponseEntity("Platform not found", HttpStatus.BAD_REQUEST);
             }
 
 
@@ -136,19 +121,18 @@ public class KeywordServiceImpl implements KeywordSearchService {
             newKeyword.setFeature(keywordSearch);
             newKeyword.setSearchData(SearchData);
             newKeyword.setCountry(countryName);
-            newKeyword.setPincode(pincode);
             newKeyword.setPlatform(platform);
             newKeyword.setCreatedAt(LocalDate.now());
             newKeyword.setUpdatedAt(LocalDate.now());
-            newKeyword.setReview(reviews);
-            featureContentDAO.save(newKeyword);
-
-
-
-
-
-
-            return ResponseEntity.ok("Keyword added successfully.");
+            newKeyword.setKeywordQuery(keywordQuery);
+            try {
+                featureContentDAO.save(newKeyword);
+            } catch (DataIntegrityViolationException e) {
+                return Utils.getResponseEntity("Keyword Data already exists", HttpStatus.CONFLICT);
+            } catch (Exception e) { // Handle generic exceptions
+                return Utils.getResponseEntity("An error occurred while adding the keyword", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return Utils.getResponseEntity("Keyword Data Added Successfully", HttpStatus.ACCEPTED);
         } else {
             log.warn("Keyword Search feature is not available for this plan.");
             return Utils.getResponseEntity("Feature not available in your plan.", HttpStatus.FORBIDDEN);
@@ -163,5 +147,59 @@ public class KeywordServiceImpl implements KeywordSearchService {
     @Override
     public ResponseEntity<UserSubscription> deleteKeyword(Map<String, String> requestMap) {
         return null;
+    }
+
+    @Override
+    public ResponseEntity<String> getKeywordData(String country, String keyword, Integer UserID) {
+
+        //TO-DO
+        //check User Subscription
+        //check for total searches remaining
+        //Get Search Result based on country and keyword
+
+//        try{
+//
+//            UserSubscription userSubDetail = userSubscriptionDao.findByUser_UserId(Long.valueOf(UserID));
+//
+//            Plan plan = userSubDetail.getPlan();
+//            for (PlanFeatureTable planFeatureTable : plan.getPlanFeature()) {
+//                Features feature = planFeatureTable.getFeature();
+//                String featureName = feature.getFeatureName();
+//                log.info("Feature Name: {}", featureName);
+//
+//                for (FeatureContentModel featureContentModel : feature.getContent()) {
+//                    String keywordQuery = featureContentModel.getKeywordQuery();
+//                    Country countryData = featureContentModel.getCountry();
+//                    String countryName = countryData.getCountryName();
+//                    if(countryName.equals(country)){
+//                        if(keywordQuery.equals(keyword) ){
+//                            String searchData = featureContentModel.getSearchData();
+//                            log.info("Search Data ++++++++:"+searchData);
+//                            return new ResponseEntity<>(searchData,HttpStatus.FOUND);
+//                        }
+//                    }
+//                }
+//            }
+//        }catch (Exception ex){
+//           log.info(String.valueOf(ex));
+//        }
+//        return Utils.getResponseEntity("No data found for "+keyword, HttpStatus.INTERNAL_SERVER_ERROR);
+//    }
+
+
+        try {
+            Optional<String> searchData = userSubscriptionDao.findSearchDataByUserAndCountryAndKeyword(
+                    Long.valueOf(UserID), country, keyword);
+
+            if (searchData.isPresent()) {
+                log.info("Search Data: {}", searchData.get());
+                return new ResponseEntity<>(searchData.get(), HttpStatus.OK);
+            } else {
+                return Utils.getResponseEntity("No data found for " + keyword, HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception ex) {
+            log.error("Error occurred while retrieving keyword data", ex);
+        }
+        return Utils.getResponseEntity("An error occurred while processing your request", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

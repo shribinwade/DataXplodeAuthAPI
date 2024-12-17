@@ -33,6 +33,7 @@ public class UserSubscription {
 
     @ManyToOne
     @JoinColumn(name = "plan_id", nullable = false)
+    @JsonBackReference
     private Plan plan; // Relationship with Plan
 
     @Enumerated(EnumType.STRING)
