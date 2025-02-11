@@ -6,6 +6,7 @@ import com.dataxplode.auth.constants.Constants;
 import com.dataxplode.auth.restController.UserSubscriptionRest;
 import com.dataxplode.auth.service.SubscriptionService;
 import com.dataxplode.auth.utils.Utils;
+import com.dataxplode.auth.wrapper.UserSearchDataWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +43,7 @@ public class UserSubscriptionRestImpl implements UserSubscriptionRest {
     }
 
     @Override
-    public ResponseEntity<List<Object[]>> getUserSearchData(Integer UserID, String country, String platform) {
+    public ResponseEntity<List<UserSearchDataWrapper>> getUserSearchData(Integer UserID, String country, String platform) {
          return subscriptionService.getUserSearchData(UserID, country, platform);
     }
 

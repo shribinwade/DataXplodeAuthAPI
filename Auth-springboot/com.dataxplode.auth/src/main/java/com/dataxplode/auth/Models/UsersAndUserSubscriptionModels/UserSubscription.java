@@ -31,7 +31,7 @@ public class UserSubscription {
     @JsonBackReference
     private User user; // Relationship with User
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id", nullable = false)
     @JsonBackReference
     private Plan plan; // Relationship with Plan

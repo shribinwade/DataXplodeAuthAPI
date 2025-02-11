@@ -9,12 +9,13 @@ import com.dataxplode.auth.Models.platformsModel.Platform;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import java.time.LocalDate;
-
+@Repository
 public interface KeywordSearchDAO extends JpaRepository<FeatureContentModel,Long> {
 
 }

@@ -17,8 +17,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.servlet.Filter;
+import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
@@ -51,7 +54,24 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure (HttpSecurity http) throws Exception{
-        http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues())
+
+        // Define CORS configuration
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+
+//        corsConfiguration.setAllowedOrigins(Arrays.asList(
+//                "http://localhost:5015",        // Allow localhost for development
+//                "https://dataxplode.com" // Allow production URL
+//        ));
+        corsConfiguration.setAllowedOriginPatterns(Collections.singletonList("*"));
+        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        corsConfiguration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        corsConfiguration.setAllowCredentials(true); // Enable cookies or auth headers
+
+        // Create and register the CORS configuration source
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfiguration);
+
+        http.cors().configurationSource(source)
                 .and()
                 .csrf().disable()
                 .authorizeRequests()

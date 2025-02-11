@@ -17,8 +17,4 @@ public class DataXplodeUsersAuthApplication {
 		SpringApplication.run(DataXplodeUsersAuthApplication.class, args);
 
 	}
-
-
-
-
 }

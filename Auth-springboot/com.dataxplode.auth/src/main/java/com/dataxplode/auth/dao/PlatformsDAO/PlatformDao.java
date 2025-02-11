@@ -7,10 +7,11 @@ import com.dataxplode.auth.wrapper.PlanWrapper;
 import com.dataxplode.auth.wrapper.PlatformWrapper;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-
+@Repository
 public interface PlatformDao extends JpaRepository<Platform,Long> {
 
     Optional<Platform> findByPlatformName(@Param("platformName") String platformName);

@@ -3,6 +3,7 @@ package com.dataxplode.auth.service;
 import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.User;
 import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.UserSubscription;
 
+import com.dataxplode.auth.wrapper.UserSearchDataWrapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -16,10 +17,8 @@ public interface SubscriptionService {
 
     ResponseEntity<UserSubscription> upgradeSubscription(Map<String, String> requestMap);
 
-    ResponseEntity<List<Object[]>>getUserSearchData(Integer UserID, String country, String platform);
-
+    ResponseEntity<List<UserSearchDataWrapper>>getUserSearchData(Integer UserID, String country, String platform);
 
     boolean isValid(UserSubscription userSubscription);
-
-
+    
 }

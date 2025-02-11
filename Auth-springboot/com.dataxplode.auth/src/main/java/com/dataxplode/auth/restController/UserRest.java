@@ -48,5 +48,4 @@ public interface UserRest {
     ResponseEntity<String> resetPassword(@RequestBody Map<String, String> requestMap);
 
 
-
 }

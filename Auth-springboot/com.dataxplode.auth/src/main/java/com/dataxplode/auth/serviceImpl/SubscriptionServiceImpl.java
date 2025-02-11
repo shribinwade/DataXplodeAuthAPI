@@ -12,6 +12,7 @@ import com.dataxplode.auth.dao.UserSubscriptionDAO.UserSubscriptionDao;
 import com.dataxplode.auth.service.SubscriptionService;
 import com.dataxplode.auth.service.UserService;
 import com.dataxplode.auth.utils.Utils;
+import com.dataxplode.auth.wrapper.UserSearchDataWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class SubscriptionServiceImpl implements SubscriptionService {
@@ -111,14 +110,18 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public ResponseEntity<List<Object[]>>  getUserSearchData(Integer UserID, String country, String platform) {
+    public ResponseEntity<List<UserSearchDataWrapper>>  getUserSearchData(Integer UserID, String country, String platform) {
         try {
-            List<Object[]> searchData = userSubscriptionDao.findUserSearchDataQuery(Long.valueOf(UserID), country, platform);
-
-
-
+            List<UserSearchDataWrapper> searchData = userSubscriptionDao.findUserSearchDataQuery(Long.valueOf(UserID), country, platform);
             if (searchData.isEmpty()) {
                 log.info("Search Data: {}", searchData);
+                UserSearchDataWrapper defaultData = new UserSearchDataWrapper(
+                        UserID.longValue(),
+                        country,
+                        platform,
+                        0L, 0L, 0L, 0L, 0L, 0L
+                );
+                searchData.add(defaultData);
                 return new ResponseEntity<>(searchData, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(searchData, HttpStatus.OK);
@@ -126,7 +129,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         } catch (Exception ex) {
             log.error("Error occurred while retrieving product data", ex);
         }
-        return new ResponseEntity<>(null, HttpStatus.OK);
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
     @Override

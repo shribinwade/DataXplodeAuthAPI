@@ -50,7 +50,7 @@ public class User  {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role; // Relationship with Role
 
@@ -63,7 +63,7 @@ public class User  {
     @Column(nullable = false)
     private boolean enabled;
 
-    @OneToOne(mappedBy = "user" ,fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "user" ,fetch = FetchType.LAZY)
     @JsonManagedReference
     private UserSubscription subscriptions; // Relationship with UserSubscription
 

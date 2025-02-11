@@ -1,13 +1,17 @@
 package com.dataxplode.auth.dao.UserSubscriptionDAO;
 
 import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.UserSubscription;
+import com.dataxplode.auth.wrapper.UserSearchDataWrapper;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+@Repository
 public interface UserSubscriptionDao extends JpaRepository<UserSubscription,Long> {
 
     UserSubscription findByUser_UserId(Long userId);
@@ -152,7 +156,7 @@ public interface UserSubscriptionDao extends JpaRepository<UserSubscription,Long
 //            "AND fct.platform.platformName = :platform"
 //    )
 
-    @Query("SELECT new com.dataxplode.auth.wrapper.userSearchDataWrapper(" +
+    @Query("SELECT new com.dataxplode.auth.wrapper.UserSearchDataWrapper(" +
             "us.user.userId, " +
             "fct.country.countryName," +
             "fct.platform.platformName," +
@@ -173,9 +177,9 @@ public interface UserSubscriptionDao extends JpaRepository<UserSubscription,Long
             "AND fct.country.countryName = :country " +
             "AND fct.platform.platformName = :platform "+
             "GROUP BY us.user.userId, fct.country.countryName, fct.platform.platformName")
-    List<Object[]> findUserSearchDataQuery(@Param("userId") Long userId,
-                                           @Param("country") String country,
-                                           @Param("platform") String platform);
+    List<UserSearchDataWrapper> findUserSearchDataQuery(@Param("userId") Long userId,
+                                                        @Param("country") String country,
+                                                        @Param("platform") String platform);
 
 }
 

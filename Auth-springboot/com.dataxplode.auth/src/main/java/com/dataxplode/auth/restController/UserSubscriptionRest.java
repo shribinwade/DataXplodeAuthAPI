@@ -2,6 +2,7 @@ package com.dataxplode.auth.restController;
 
 import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.User;
 import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.UserSubscription;
+import com.dataxplode.auth.wrapper.UserSearchDataWrapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +21,7 @@ public interface UserSubscriptionRest {
     ResponseEntity<UserSubscription> upgradeSubscription(@RequestBody(required = true) Map<String, String> requestMap);
 
     @GetMapping(path ="/getUserSearchData")
-    ResponseEntity<List<Object[]>>getUserSearchData(@RequestParam Integer UserID, @RequestParam String country, @RequestParam String platform);
+    ResponseEntity<List<UserSearchDataWrapper>>getUserSearchData(@RequestParam Integer UserID, @RequestParam String country, @RequestParam String platform);
 
 
 }
