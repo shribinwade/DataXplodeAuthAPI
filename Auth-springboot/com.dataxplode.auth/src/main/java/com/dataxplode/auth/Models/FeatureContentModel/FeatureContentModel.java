@@ -78,4 +78,11 @@ public class FeatureContentModel {
     @JoinColumn(name = "pincode_id", nullable = true)
     private Pincode pincode;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")  // Ensures each search is linked to a user
+    private User user;
+
+
+
+
 }

@@ -1,5 +1,6 @@
 package com.dataxplode.auth.restController;
 
+import com.dataxplode.auth.DTO.userDTO;
 import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.User;
 
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ public interface UserRest {
     public ResponseEntity<String> test();
 
     @PostMapping("/getUserDetails")
-    public ResponseEntity<User> getUserDetails(@RequestBody(required = true) Map<String,String> requestMap);
+    public ResponseEntity<userDTO> getUserDetails(@RequestBody(required = true) Map<String,String> requestMap);
 
     //SIGNUP ENDPOINT
     @PostMapping(path = "/signup")
@@ -46,6 +47,7 @@ public interface UserRest {
 
     @PostMapping(path = "/resetPassword")
     ResponseEntity<String> resetPassword(@RequestBody Map<String, String> requestMap);
+
 
 
 }

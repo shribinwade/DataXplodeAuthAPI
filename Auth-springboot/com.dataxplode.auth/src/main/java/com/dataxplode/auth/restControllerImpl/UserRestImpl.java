@@ -1,5 +1,6 @@
 package com.dataxplode.auth.restControllerImpl;
 
+import com.dataxplode.auth.DTO.userDTO;
 import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.User;
 import com.dataxplode.auth.constants.Constants;
 import com.dataxplode.auth.restController.UserRest;
@@ -27,7 +28,7 @@ public class UserRestImpl implements UserRest {
     }
 
     @Override
-    public ResponseEntity<User> getUserDetails(Map<String, String> requestMap) {
+    public ResponseEntity<userDTO> getUserDetails(Map<String, String> requestMap) {
        return userService.getUserDetails(requestMap);
     }
 

@@ -28,6 +28,8 @@ import java.util.List;
 @DynamicUpdate
 @NoArgsConstructor
 @Table(name = "users")
+@Getter
+@Setter
 public class User  {
 //    WE have used Data annotation to create noarg arg construtor and getter and setter methods
 
@@ -50,7 +52,7 @@ public class User  {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role; // Relationship with Role
 

@@ -1,5 +1,6 @@
 package com.dataxplode.auth.dao.UserSubscriptionDAO;
 
+import com.dataxplode.auth.Models.FeatureContentModel.FeatureContentModel;
 import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.UserSubscription;
 import com.dataxplode.auth.wrapper.UserSearchDataWrapper;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,7 +26,7 @@ public interface UserSubscriptionDao extends JpaRepository<UserSubscription,Long
             "JOIN p.planFeature pf " +
             "JOIN pf.feature f " +
             "JOIN f.content fcm " +
-            "WHERE us.user.userId = :userId " +
+            "WHERE fcm.user.userId = :userId " +
             "AND fcm.country.countryName = :country " +
             "AND fcm.keywordQuery = :keyword")
     Optional<String> findSearchDataByUserAndCountryAndKeyword(
@@ -173,13 +174,16 @@ public interface UserSubscriptionDao extends JpaRepository<UserSubscription,Long
             "JOIN p.planFeature pf " +
             "JOIN pf.feature f " +
             "JOIN f.content fct " +
-            "WHERE us.user.userId = :userId " +
+            "WHERE fct.user.userId = :userId " +
             "AND fct.country.countryName = :country " +
             "AND fct.platform.platformName = :platform "+
             "GROUP BY us.user.userId, fct.country.countryName, fct.platform.platformName")
     List<UserSearchDataWrapper> findUserSearchDataQuery(@Param("userId") Long userId,
                                                         @Param("country") String country,
                                                         @Param("platform") String platform);
+
+
+
 
 }
 

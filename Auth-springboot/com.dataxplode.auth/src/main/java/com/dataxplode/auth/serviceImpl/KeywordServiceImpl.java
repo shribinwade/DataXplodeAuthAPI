@@ -4,6 +4,7 @@ import com.dataxplode.auth.Models.FeatureContentModel.FeatureContentModel;
 import com.dataxplode.auth.Models.FeatureModel.Features;
 import com.dataxplode.auth.Models.PlanFeatureCommonModel.PlanFeatureTable;
 import com.dataxplode.auth.Models.ReviewsModel.Reviews;
+import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.User;
 import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.UserSubscription;
 import com.dataxplode.auth.Models.countryModel.Country;
 import com.dataxplode.auth.Models.pincodeModel.Pincode;
@@ -13,6 +14,7 @@ import com.dataxplode.auth.dao.FeatureContentDAO.FeatureContentDAO;
 import com.dataxplode.auth.dao.FeatureDAO.FeatureDAO;
 import com.dataxplode.auth.dao.PincodeDAO.PincodeDAO;
 import com.dataxplode.auth.dao.PlatformsDAO.PlatformDao;
+import com.dataxplode.auth.dao.UserDao;
 import com.dataxplode.auth.dao.UserSubscriptionDAO.UserSubscriptionDao;
 import com.dataxplode.auth.dao.CountryDAO.CountryDao;
 import com.dataxplode.auth.dao.reviewsDAO.ReviewsDao;
@@ -58,6 +60,9 @@ public class KeywordServiceImpl implements KeywordSearchService {
     @Autowired
     ReviewsDao reviewsDao;
 
+    @Autowired
+    UserDao userDao;
+
 
     @Override
     public ResponseEntity<String> addKeyword(Map<String, String> requestMap) {
@@ -66,6 +71,10 @@ public class KeywordServiceImpl implements KeywordSearchService {
         UserSubscription userSubDetail = userSubscriptionDao.findByUser_UserId(
                 Long.parseLong(requestMap.get("userId"))
         );
+
+        Optional<User> userId = userDao.findByUserId(Long.parseLong(requestMap.get("userId")));
+
+        User user = userId.get();
 
         if (userSubDetail == null) {
             return Utils.getResponseEntity("User subscription details not found", HttpStatus.BAD_REQUEST);
@@ -125,6 +134,7 @@ public class KeywordServiceImpl implements KeywordSearchService {
             newKeyword.setCreatedAt(LocalDate.now());
             newKeyword.setUpdatedAt(LocalDate.now());
             newKeyword.setKeywordQuery(keywordQuery);
+            newKeyword.setUser(user);
             try {
                 featureContentDAO.save(newKeyword);
             } catch (DataIntegrityViolationException e) {

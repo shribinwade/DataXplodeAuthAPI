@@ -1,12 +1,15 @@
 
 package com.dataxplode.auth.serviceImpl;
 
+import com.dataxplode.auth.DTO.UserSearchHistoryDTO;
+import com.dataxplode.auth.Models.FeatureContentModel.FeatureContentModel;
 import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.SubscriptionStatus;
 import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.User;
 import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.UserSubscription;
 import com.dataxplode.auth.Models.planModel.BillingCycle;
 import com.dataxplode.auth.Models.planModel.Plan;
 
+import com.dataxplode.auth.dao.FeatureContentDAO.FeatureContentDAO;
 import com.dataxplode.auth.dao.PlanDAO.PlanDao;
 import com.dataxplode.auth.dao.UserSubscriptionDAO.UserSubscriptionDao;
 import com.dataxplode.auth.service.SubscriptionService;
@@ -31,6 +34,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Autowired
     UserSubscriptionDao userSubscriptionDao;
+
+    @Autowired
+    FeatureContentDAO featureContentDAO;
 
     @Autowired
     PlanDao planDao;
@@ -125,6 +131,22 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 return new ResponseEntity<>(searchData, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(searchData, HttpStatus.OK);
+            }
+        } catch (Exception ex) {
+            log.error("Error occurred while retrieving product data", ex);
+        }
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+    }
+
+    @Override
+    public ResponseEntity<List<UserSearchHistoryDTO>> getUserKeywordSearchData(Long UserID, String featureName) {
+        try {
+            List<UserSearchHistoryDTO> searchKeywordData = featureContentDAO.searchByKeywordAndSubscription(Long.valueOf(UserID), featureName);
+            if (searchKeywordData.isEmpty()) {
+                log.info("Search Data: {}", searchKeywordData);
+                return new ResponseEntity<>(searchKeywordData, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(searchKeywordData, HttpStatus.OK);
             }
         } catch (Exception ex) {
             log.error("Error occurred while retrieving product data", ex);

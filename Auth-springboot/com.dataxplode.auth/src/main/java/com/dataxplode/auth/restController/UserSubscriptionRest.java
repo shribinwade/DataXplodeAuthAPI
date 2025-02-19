@@ -1,5 +1,7 @@
 package com.dataxplode.auth.restController;
 
+import com.dataxplode.auth.DTO.UserSearchHistoryDTO;
+import com.dataxplode.auth.Models.FeatureContentModel.FeatureContentModel;
 import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.User;
 import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.UserSubscription;
 import com.dataxplode.auth.wrapper.UserSearchDataWrapper;
@@ -22,6 +24,9 @@ public interface UserSubscriptionRest {
 
     @GetMapping(path ="/getUserSearchData")
     ResponseEntity<List<UserSearchDataWrapper>>getUserSearchData(@RequestParam Integer UserID, @RequestParam String country, @RequestParam String platform);
+
+    @GetMapping(path = "/getUserKeywordSearchData")
+    ResponseEntity<List<UserSearchHistoryDTO>>getUserSearchData(@RequestParam("userId") Long userId, @RequestParam("featureName") String featureName);
 
 
 }

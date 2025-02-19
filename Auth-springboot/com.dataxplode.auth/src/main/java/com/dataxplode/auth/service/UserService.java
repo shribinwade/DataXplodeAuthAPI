@@ -1,5 +1,6 @@
 package com.dataxplode.auth.service;
 
+import com.dataxplode.auth.DTO.userDTO;
 import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.User;
 import com.dataxplode.auth.wrapper.UserWrapper;
 import org.apache.coyote.Response;
@@ -27,5 +28,5 @@ public interface UserService {
 
     ResponseEntity<String> resetPassword(Map<String,String> requestMap);
 
-    ResponseEntity<User> getUserDetails(Map<String, String> requestMap);
+    ResponseEntity<userDTO> getUserDetails(Map<String, String> requestMap);
 }

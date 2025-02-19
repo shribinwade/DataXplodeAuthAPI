@@ -1,11 +1,16 @@
 package com.dataxplode.auth.serviceImpl;
 
+import com.dataxplode.auth.DTO.PlanDTO;
+import com.dataxplode.auth.DTO.roleDTO;
+import com.dataxplode.auth.DTO.userDTO;
+import com.dataxplode.auth.DTO.userSubscriptionDTO;
 import com.dataxplode.auth.Models.RoleModel.Role;
 import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.User;
 import com.dataxplode.auth.JWT.CustomerUserDetailsService;
 import com.dataxplode.auth.JWT.JwtFilter;
 import com.dataxplode.auth.JWT.JwtUtil;
 import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.UserSubscription;
+import com.dataxplode.auth.Models.planModel.Plan;
 import com.dataxplode.auth.constants.Constants;
 import com.dataxplode.auth.dao.UserDao;
 import com.dataxplode.auth.service.SubscriptionService;
@@ -15,6 +20,7 @@ import com.dataxplode.auth.utils.Utils;
 import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -147,6 +153,13 @@ public class UserServiceImpl implements UserService {
         );
         if (auth.isAuthenticated()){
             if(customerUserDetailsService.getUserDetails().getUserStatus().equalsIgnoreCase("true")){
+                log.info("UserDetails"+ customerUserDetailsService.getUserDetails().getEmail()+
+                        customerUserDetailsService.getUserDetails().getRole()+
+                        customerUserDetailsService.getUserDetails().getUsername()+
+                        customerUserDetailsService.getUserDetails().getContactNumber()+
+                        customerUserDetailsService.getUserDetails().getUserId()+
+                        customerUserDetailsService.getUserDetails().getUserStatus()
+                );
                 return new ResponseEntity<String>("{\"token\":\""+
                         jwtUtil.generateToken(
                                 customerUserDetailsService.getUserDetails().getEmail(),
@@ -329,14 +342,30 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<User> getUserDetails(Map<String, String> requestMap) {
-        User user = new User();
+    public ResponseEntity<userDTO> getUserDetails(Map<String, String> requestMap) {
+        userDTO user = new userDTO();
         try{
+            log.info(requestMap.toString());
             Optional<User> userDetails = userDao.findByUserId(Long.parseLong(requestMap.get("userId")));
             if(userDetails.isPresent()){
                 User userDetail = userDetails.get();
-                return new ResponseEntity <>(userDetail,HttpStatus.OK);
+                Role role = userDetail.getRole();
+                UserSubscription subscriptions = userDetail.getSubscriptions();
+                Plan plan = subscriptions.getPlan();
 
+                roleDTO roleDTO = new roleDTO();
+                userSubscriptionDTO userSubscriptionDTO = new userSubscriptionDTO();
+                PlanDTO planDTO = new PlanDTO();
+
+                BeanUtils.copyProperties(role,roleDTO);
+                BeanUtils.copyProperties(userDetail, user);
+                BeanUtils.copyProperties(subscriptions,userSubscriptionDTO);
+                BeanUtils.copyProperties(plan,planDTO);
+
+                userSubscriptionDTO.setPlan(planDTO);
+                user.setRole(roleDTO);
+                user.setSubscription(userSubscriptionDTO);
+                return new ResponseEntity <>(user,HttpStatus.OK);
             }else{
                 return new ResponseEntity <>(user,HttpStatus.NOT_FOUND);
 

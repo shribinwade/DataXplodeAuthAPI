@@ -1,5 +1,7 @@
 package com.dataxplode.auth.service;
 
+import com.dataxplode.auth.DTO.UserSearchHistoryDTO;
+import com.dataxplode.auth.Models.FeatureContentModel.FeatureContentModel;
 import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.User;
 import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.UserSubscription;
 
@@ -18,6 +20,9 @@ public interface SubscriptionService {
     ResponseEntity<UserSubscription> upgradeSubscription(Map<String, String> requestMap);
 
     ResponseEntity<List<UserSearchDataWrapper>>getUserSearchData(Integer UserID, String country, String platform);
+
+    ResponseEntity<List<UserSearchHistoryDTO>>getUserKeywordSearchData(Long UserID, String keyword);
+
 
     boolean isValid(UserSubscription userSubscription);
     

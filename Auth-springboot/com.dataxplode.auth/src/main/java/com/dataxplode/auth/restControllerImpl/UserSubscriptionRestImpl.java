@@ -1,5 +1,7 @@
 package com.dataxplode.auth.restControllerImpl;
 
+import com.dataxplode.auth.DTO.UserSearchHistoryDTO;
+import com.dataxplode.auth.Models.FeatureContentModel.FeatureContentModel;
 import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.User;
 import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.UserSubscription;
 import com.dataxplode.auth.constants.Constants;
@@ -45,6 +47,11 @@ public class UserSubscriptionRestImpl implements UserSubscriptionRest {
     @Override
     public ResponseEntity<List<UserSearchDataWrapper>> getUserSearchData(Integer UserID, String country, String platform) {
          return subscriptionService.getUserSearchData(UserID, country, platform);
+    }
+
+    @Override
+    public ResponseEntity<List<UserSearchHistoryDTO>> getUserSearchData(Long userId, String featureName) {
+        return subscriptionService.getUserKeywordSearchData(userId, featureName);
     }
 
 
