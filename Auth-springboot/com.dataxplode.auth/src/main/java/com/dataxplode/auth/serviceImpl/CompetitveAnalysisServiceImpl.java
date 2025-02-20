@@ -3,6 +3,7 @@ package com.dataxplode.auth.serviceImpl;
 import com.dataxplode.auth.Models.FeatureContentModel.FeatureContentModel;
 import com.dataxplode.auth.Models.FeatureModel.Features;
 import com.dataxplode.auth.Models.PlanFeatureCommonModel.PlanFeatureTable;
+import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.User;
 import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.UserSubscription;
 import com.dataxplode.auth.Models.countryModel.Country;
 import com.dataxplode.auth.Models.planModel.Plan;
@@ -12,6 +13,7 @@ import com.dataxplode.auth.dao.FeatureContentDAO.FeatureContentDAO;
 import com.dataxplode.auth.dao.FeatureDAO.FeatureDAO;
 import com.dataxplode.auth.dao.PincodeDAO.PincodeDAO;
 import com.dataxplode.auth.dao.PlatformsDAO.PlatformDao;
+import com.dataxplode.auth.dao.UserDao;
 import com.dataxplode.auth.dao.UserSubscriptionDAO.UserSubscriptionDao;
 import com.dataxplode.auth.service.CompetitveAnalysisService;
 import com.dataxplode.auth.utils.Utils;
@@ -51,6 +53,9 @@ public class CompetitveAnalysisServiceImpl implements CompetitveAnalysisService 
     @Autowired
     FeatureContentDAO featureContentDAO;
 
+    @Autowired
+    UserDao userDao;
+
 
 
     private static final Logger log = LoggerFactory.getLogger(KeywordServiceImpl.class);
@@ -87,6 +92,11 @@ public class CompetitveAnalysisServiceImpl implements CompetitveAnalysisService 
                 }
 
                 if(featureExists){
+
+                    Optional<User> userId = userDao.findByUserId(Long.parseLong(requestMap.get("userId")));
+
+                    User user = userId.get();
+
                     //Feature
                     Features CompetitorAnalysisFeature = featureDAO.findByFeature_name("Competitor Analysis Search");
 
@@ -116,6 +126,7 @@ public class CompetitveAnalysisServiceImpl implements CompetitveAnalysisService 
                     newDistributors.setCreatedAt(LocalDate.now());
                     newDistributors.setUpdatedAt(LocalDate.now());
                     newDistributors.setCompetitiorAnalysisQuery(competitiveSearchQuery);
+                    newDistributors.setUser(user);
 
                     try{
                         featureContentDAO.save(newDistributors);

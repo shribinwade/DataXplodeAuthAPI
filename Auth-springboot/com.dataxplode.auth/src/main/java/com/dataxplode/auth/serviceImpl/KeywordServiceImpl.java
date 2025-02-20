@@ -72,13 +72,12 @@ public class KeywordServiceImpl implements KeywordSearchService {
                 Long.parseLong(requestMap.get("userId"))
         );
 
-        Optional<User> userId = userDao.findByUserId(Long.parseLong(requestMap.get("userId")));
-
-        User user = userId.get();
-
         if (userSubDetail == null) {
             return Utils.getResponseEntity("User subscription details not found", HttpStatus.BAD_REQUEST);
         }
+        Optional<User> userId = userDao.findByUserId(Long.parseLong(requestMap.get("userId")));
+
+        User user = userId.get();
 
 
         Plan plan = userSubDetail.getPlan();

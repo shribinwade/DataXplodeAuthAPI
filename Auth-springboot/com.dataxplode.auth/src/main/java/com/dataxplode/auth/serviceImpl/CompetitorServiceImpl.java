@@ -3,6 +3,7 @@ package com.dataxplode.auth.serviceImpl;
 import com.dataxplode.auth.Models.FeatureContentModel.FeatureContentModel;
 import com.dataxplode.auth.Models.FeatureModel.Features;
 import com.dataxplode.auth.Models.PlanFeatureCommonModel.PlanFeatureTable;
+import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.User;
 import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.UserSubscription;
 import com.dataxplode.auth.Models.countryModel.Country;
 import com.dataxplode.auth.Models.planModel.Plan;
@@ -12,6 +13,7 @@ import com.dataxplode.auth.dao.FeatureContentDAO.FeatureContentDAO;
 import com.dataxplode.auth.dao.FeatureDAO.FeatureDAO;
 import com.dataxplode.auth.dao.PincodeDAO.PincodeDAO;
 import com.dataxplode.auth.dao.PlatformsDAO.PlatformDao;
+import com.dataxplode.auth.dao.UserDao;
 import com.dataxplode.auth.dao.UserSubscriptionDAO.UserSubscriptionDao;
 import com.dataxplode.auth.dao.reviewsDAO.ReviewsDao;
 import com.dataxplode.auth.service.CompetitorStrategySearchService;
@@ -58,6 +60,9 @@ public class CompetitorServiceImpl implements CompetitorStrategySearchService {
     @Autowired
     ReviewsDao reviewsDao;
 
+    @Autowired
+    UserDao userDao;
+
 
     @Override
     public ResponseEntity<String> addCompetitor(Map<String, String> requestMap) {
@@ -89,6 +94,10 @@ public class CompetitorServiceImpl implements CompetitorStrategySearchService {
                 }
 
                 if(featureExists){
+                    //User
+                    Optional<User> userId = userDao.findByUserId(Long.parseLong(requestMap.get("userId")));
+                    User user = userId.get();
+
                     //Feature
                     Features CompetitiveStratergyFeature = featureDAO.findByFeature_name("Competitive Strategy Search");
 
@@ -110,17 +119,18 @@ public class CompetitorServiceImpl implements CompetitorStrategySearchService {
                     }
 
                     // Create and save the keyword entry
-                    FeatureContentModel newDistributors = new FeatureContentModel();
-                    newDistributors.setFeature(CompetitiveStratergyFeature);
-                    newDistributors.setSearchData(SearchData);
-                    newDistributors.setCountry(countryName);
-                    newDistributors.setPlatform(platform);
-                    newDistributors.setCreatedAt(LocalDate.now());
-                    newDistributors.setUpdatedAt(LocalDate.now());
-                    newDistributors.setCompetitiveStratergyQuery(competitiveSearchQuery);
+                    FeatureContentModel newcompetitor = new FeatureContentModel();
+                    newcompetitor.setFeature(CompetitiveStratergyFeature);
+                    newcompetitor.setSearchData(SearchData);
+                    newcompetitor.setCountry(countryName);
+                    newcompetitor.setPlatform(platform);
+                    newcompetitor.setCreatedAt(LocalDate.now());
+                    newcompetitor.setUpdatedAt(LocalDate.now());
+                    newcompetitor.setCompetitiveStratergyQuery(competitiveSearchQuery);
+                    newcompetitor.setUser(user);
 
                     try{
-                        featureContentDAO.save(newDistributors);
+                        featureContentDAO.save(newcompetitor);
                     }catch(DataIntegrityViolationException e){
                         log.info(String.valueOf(e));
                         return Utils.getResponseEntity("Competitive Stratergy Data already exists", HttpStatus.CONFLICT);

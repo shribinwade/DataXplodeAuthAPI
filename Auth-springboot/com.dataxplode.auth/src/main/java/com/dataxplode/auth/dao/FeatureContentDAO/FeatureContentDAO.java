@@ -15,7 +15,7 @@ public interface FeatureContentDAO extends JpaRepository<FeatureContentModel,Lon
 
 
     @Query("SELECT new com.dataxplode.auth.DTO.UserSearchHistoryDTO(" +
-            "fc.id, fc.keywordQuery, fc.competitiveStratergyQuery,fc.marketSearchQuery , fc.createdAt, c.countryName, f.featureName, p.platformName) " +
+            "fc.id,fc.productQuery, fc.keywordQuery, fc.distributorQuery, fc.competitiorAnalysisQuery, fc.competitiveStratergyQuery, fc.marketSearchQuery , fc.createdAt, c.countryName, f.featureName, p.platformName) " +
             "FROM FeatureContentModel fc " +
             "JOIN fc.feature f " +
             "JOIN UserSubscription us ON us.user.userId = fc.user.userId " +  // Correcting the join condition for UserSubscription

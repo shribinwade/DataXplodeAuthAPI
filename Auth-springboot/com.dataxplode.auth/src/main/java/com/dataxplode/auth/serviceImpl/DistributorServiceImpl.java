@@ -4,6 +4,7 @@ import com.dataxplode.auth.Models.FeatureContentModel.FeatureContentModel;
 import com.dataxplode.auth.Models.FeatureModel.Features;
 import com.dataxplode.auth.Models.PlanFeatureCommonModel.PlanFeatureTable;
 import com.dataxplode.auth.Models.ReviewsModel.Reviews;
+import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.User;
 import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.UserSubscription;
 import com.dataxplode.auth.Models.countryModel.Country;
 import com.dataxplode.auth.Models.pincodeModel.Pincode;
@@ -14,6 +15,7 @@ import com.dataxplode.auth.dao.FeatureContentDAO.FeatureContentDAO;
 import com.dataxplode.auth.dao.FeatureDAO.FeatureDAO;
 import com.dataxplode.auth.dao.PincodeDAO.PincodeDAO;
 import com.dataxplode.auth.dao.PlatformsDAO.PlatformDao;
+import com.dataxplode.auth.dao.UserDao;
 import com.dataxplode.auth.dao.UserSubscriptionDAO.UserSubscriptionDao;
 import com.dataxplode.auth.dao.reviewsDAO.ReviewsDao;
 import com.dataxplode.auth.service.DistributorSearchService;
@@ -58,6 +60,9 @@ public class DistributorServiceImpl implements DistributorSearchService {
     @Autowired
     ReviewsDao reviewsDao;
 
+    @Autowired
+    UserDao userDao;
+
     private static final Logger log = LoggerFactory.getLogger(DistributorServiceImpl.class);
 
 
@@ -92,6 +97,9 @@ public class DistributorServiceImpl implements DistributorSearchService {
                 }
 
                 if(featureExists){
+                    //user
+                    Optional<User> userId = userDao.findByUserId(Long.parseLong(requestMap.get("userId")));
+                    User user = userId.get();
                     //Feature
                     Features distributorSearch = featureDAO.findByFeature_name("Distributor Search");
 
@@ -121,6 +129,7 @@ public class DistributorServiceImpl implements DistributorSearchService {
                     newDistributors.setCreatedAt(LocalDate.now());
                     newDistributors.setUpdatedAt(LocalDate.now());
                     newDistributors.setDistributorQuery(DistributorQuery);
+                    newDistributors.setUser(user);
 
                     try{
                         featureContentDAO.save(newDistributors);

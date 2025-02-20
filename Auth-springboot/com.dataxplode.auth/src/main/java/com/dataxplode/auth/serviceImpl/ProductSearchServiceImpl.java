@@ -4,6 +4,7 @@ import com.dataxplode.auth.Models.FeatureContentModel.FeatureContentModel;
 import com.dataxplode.auth.Models.FeatureModel.Features;
 import com.dataxplode.auth.Models.PlanFeatureCommonModel.PlanFeatureTable;
 import com.dataxplode.auth.Models.ReviewsModel.Reviews;
+import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.User;
 import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.UserSubscription;
 import com.dataxplode.auth.Models.countryModel.Country;
 import com.dataxplode.auth.Models.planModel.Plan;
@@ -13,6 +14,7 @@ import com.dataxplode.auth.dao.FeatureContentDAO.FeatureContentDAO;
 import com.dataxplode.auth.dao.FeatureDAO.FeatureDAO;
 import com.dataxplode.auth.dao.PincodeDAO.PincodeDAO;
 import com.dataxplode.auth.dao.PlatformsDAO.PlatformDao;
+import com.dataxplode.auth.dao.UserDao;
 import com.dataxplode.auth.dao.UserSubscriptionDAO.UserSubscriptionDao;
 import com.dataxplode.auth.dao.reviewsDAO.ReviewsDao;
 import com.dataxplode.auth.service.ProductSearchService;
@@ -154,6 +156,9 @@ public class ProductSearchServiceImpl implements ProductSearchService {
     @Autowired
     ReviewsDao reviewsDao;
 
+    @Autowired
+    UserDao userDao;
+
     private static final Logger log = LoggerFactory.getLogger(ProductSearchServiceImpl.class);
 
 
@@ -189,6 +194,10 @@ public class ProductSearchServiceImpl implements ProductSearchService {
                 }
 
                 if(featureExists){
+                    //user
+                    Optional<User> userId = userDao.findByUserId(Long.parseLong(requestMap.get("userId")));
+
+                    User user = userId.get();
                     //Feature
                     Features productSearch = featureDAO.findByFeature_name("Product Search");
 
@@ -244,6 +253,7 @@ public class ProductSearchServiceImpl implements ProductSearchService {
                     newProduct.setUpdatedAt(LocalDate.now());
                     newProduct.setProductQuery(ProductQuery);
                     newProduct.setReview(reviews);
+                    newProduct.setUser((user));
 
                     try{
                         featureContentDAO.save(newProduct);

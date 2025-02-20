@@ -3,6 +3,7 @@ package com.dataxplode.auth.serviceImpl;
 import com.dataxplode.auth.Models.FeatureContentModel.FeatureContentModel;
 import com.dataxplode.auth.Models.FeatureModel.Features;
 import com.dataxplode.auth.Models.PlanFeatureCommonModel.PlanFeatureTable;
+import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.User;
 import com.dataxplode.auth.Models.UsersAndUserSubscriptionModels.UserSubscription;
 import com.dataxplode.auth.Models.countryModel.Country;
 import com.dataxplode.auth.Models.planModel.Plan;
@@ -12,6 +13,7 @@ import com.dataxplode.auth.dao.FeatureContentDAO.FeatureContentDAO;
 import com.dataxplode.auth.dao.FeatureDAO.FeatureDAO;
 import com.dataxplode.auth.dao.PincodeDAO.PincodeDAO;
 import com.dataxplode.auth.dao.PlatformsDAO.PlatformDao;
+import com.dataxplode.auth.dao.UserDao;
 import com.dataxplode.auth.dao.UserSubscriptionDAO.UserSubscriptionDao;
 import com.dataxplode.auth.dao.reviewsDAO.ReviewsDao;
 import com.dataxplode.auth.service.DistributorSearchService;
@@ -57,6 +59,9 @@ public class MarketServiceImpl implements MarketSearchService {
     @Autowired
     ReviewsDao reviewsDao;
 
+    @Autowired
+    UserDao userDao;
+
     private static final Logger log = LoggerFactory.getLogger(MarketServiceImpl.class);
 
 
@@ -91,6 +96,11 @@ public class MarketServiceImpl implements MarketSearchService {
                 }
 
                 if(featureExists){
+
+                    //user
+                    Optional<User> userId = userDao.findByUserId(Long.parseLong(requestMap.get("userId")));
+                    User user = userId.get();
+
                     //Feature
                     Features marketSearch = featureDAO.findByFeature_name("Market Search");
 
@@ -120,6 +130,7 @@ public class MarketServiceImpl implements MarketSearchService {
                     newMarket.setCreatedAt(LocalDate.now());
                     newMarket.setUpdatedAt(LocalDate.now());
                     newMarket.setMarketSearchQuery(MarketQuery);
+                    newMarket.setUser(user);
                     try{
                         featureContentDAO.save(newMarket);
                     }catch(DataIntegrityViolationException e){

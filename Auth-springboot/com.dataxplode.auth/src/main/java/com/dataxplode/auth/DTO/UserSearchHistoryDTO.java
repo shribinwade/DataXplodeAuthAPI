@@ -11,7 +11,10 @@ import java.time.LocalDate;
 @Setter
 public class UserSearchHistoryDTO {
     private Long id;
+    private String productSearchQuery;
     private String keywordQuery;
+    private String distributorQuery;
+    private String competitorQuery;
     private String competitiveStratergyQuery;
     private String marketSearchQuery;
     private LocalDate createdAt;
