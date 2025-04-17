@@ -109,7 +109,7 @@ public class EmailUtils {
                 "            <p>Thank you,<br>DataXplode Team</p>\n" +
                 "        </div>\n" +
                 "        <div class=\"footer\">\n" +
-                "            <p>&copy; 2024 Your Company. All rights reserved.</p>\n" +
+                "            <p>&copy; 2024 DataXplode. All rights reserved.</p>\n" +
                 "        </div>\n" +
                 "    </div>\n" +
                 "</body>\n" +

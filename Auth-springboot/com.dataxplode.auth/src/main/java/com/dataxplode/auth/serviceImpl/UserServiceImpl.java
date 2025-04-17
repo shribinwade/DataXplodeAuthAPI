@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -56,6 +57,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     EmailUtils emailUtils;
+
+    @Value("${frontend.url}")
+    private String frontendUrl;
 
 
     @Autowired
@@ -199,20 +203,23 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<String> update(Map<String, String> requestMap) {
         try{
-            if(jwtFilter.isAdmin()){
-                Optional<User> optional = userDao.findById(Integer.parseInt(requestMap.get("id")));
-                if (!optional.isEmpty()){
-                      userDao.updateStatus(requestMap.get("status"), Integer.parseInt(requestMap.get("id")));
-                      sendMailToAllAdmin(requestMap.get("status"), optional.get().getEmail(),userDao.getAllAdmin());
-                      return Utils.getResponseEntity("User Status Updated Successfully", HttpStatus.OK);
+            if(requestMap.isEmpty()){
+                return Utils.getResponseEntity(Constants.INVALID_DATA, HttpStatus.BAD_REQUEST);
+            }else {
+                if (jwtFilter.isAdmin()) {
+                    Optional<User> optional = userDao.findById(Integer.parseInt(requestMap.get("id")));
+                    if (!optional.isEmpty()) {
+                        userDao.updateStatus(requestMap.get("status"), Integer.parseInt(requestMap.get("id")));
+                        sendMailToAllAdmin(requestMap.get("status"), optional.get().getEmail(), userDao.getAllAdmin());
+                        return Utils.getResponseEntity("User Status Updated Successfully", HttpStatus.OK);
 
-                }else{
-                    return Utils.getResponseEntity("User id doesn't not exist", HttpStatus.OK);
+                    } else {
+                        return Utils.getResponseEntity("User id doesn't not exist", HttpStatus.OK);
+                    }
+                } else {
+                    return Utils.getResponseEntity(Constants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
                 }
-            }else{
-                return Utils.getResponseEntity(Constants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
             }
-
         }catch(Exception ex){
            ex.printStackTrace();
         }
@@ -267,7 +274,7 @@ public class UserServiceImpl implements UserService {
                String resetToken = jwtUtil.generateResetToken(user.getEmail());
 
                // Construct the password reset link
-               String resetLink = "http://localhost:4200/auth/reset-password?token=" + resetToken;
+               String resetLink = frontendUrl+"auth/reset-password?token=" + resetToken;
 
                // Send the reset link to the user's email
                emailUtils.forgotMail(user.getEmail(), "Reset Your Password",

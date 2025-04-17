@@ -52,8 +52,6 @@ public class CompetitveAnalysisRestImpl  implements CompetitiveAnalysisSearchRes
             log.info("Unable to add Distributor: ",ex);
         }
         return Utils.getResponseEntity(Constants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
-
-
     }
 
 }
